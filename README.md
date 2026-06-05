@@ -1,4 +1,6 @@
-# Predicción Estacional de Precios Mayoristas Hortofrutícolas en Chile## 1. Definición del Problema
+# Predicción Estacional de Precios Mayoristas Hortofrutícolas en Chile
+
+## 1. Definición del Problema
 
 El sector agrícola y comercializador en Chile se enfrenta a una alta volatilidad de precios en los mercados mayoristas. Esta variación está impulsada principalmente por dinámicas geográficas, fluctuaciones en la oferta diaria (`Volumen`) y, fundamentalmente, por factores climáticos estacionales. Para los agricultores, intermediarios y tomadores de decisiones, la incertidumbre en el valor de cierre de las transacciones dificulta la planificación financiera a mediano plazo, la gestión de inventarios y la optimización de las cadenas de distribución.
 
@@ -8,7 +10,7 @@ El sector agrícola y comercializador en Chile se enfrenta a una alta volatilida
 
 ---
 
-## 1. Integrantes
+## Integrantes
 
 * Nahuel Catrileo
 * Francisco Ceballos
