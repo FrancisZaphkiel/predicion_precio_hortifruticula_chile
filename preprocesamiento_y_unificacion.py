@@ -1,7 +1,6 @@
 import os
 import re
 import pandas as pd
-from sklearn.model_selection import train_test_split
 
 def clean_numeric_str(val):
     if pd.isna(val):
@@ -35,7 +34,7 @@ def get_season_chile(month):
     return 'Desconocido'
 
 def main():
-    print("Iniciando pipeline de unificación y preprocesamiento...")
+    print("Iniciando pipeline de unificación y preprocesamiento cronológico...")
     
     # 1. Cargar y concatenar datasets
     csv_2025 = 'dataset/2025.csv'
@@ -88,22 +87,21 @@ def main():
     df_weighted.to_csv(unified_path, index=False)
     print(f"Dataset unificado guardado en: {unified_path}")
     
-    # 6. Partición estratificada por estaciones (70% train, 15% val, 15% test)
-    # Primera partición: Separamos el 15% para Test
-    df_train_val, df_test = train_test_split(
-        df_weighted,
-        test_size=0.15,
-        random_state=42,
-        stratify=df_weighted['Estacion']
-    )
+    # 6. Partición Cronológica Estratégica
+    # Entrenamiento: Todo el año 2025
+    df_train = df_weighted[df_weighted['Fecha'].dt.year == 2025].copy()
     
-    # Segunda partición: Del 85% restante, separamos 15% para Validación (15/85 ≈ 0.17647)
-    df_train, df_val = train_test_split(
-        df_train_val,
-        test_size=(15/85),
-        random_state=42,
-        stratify=df_train_val['Estacion']
-    )
+    # Validación y Prueba: Se extraen del año 2026
+    df_2026 = df_weighted[df_weighted['Fecha'].dt.year == 2026].copy()
+    
+    # Ordenar cronológicamente 2026 para dividirlo exactamente a la mitad por fecha
+    df_2026_sorted = df_2026.sort_values(by='Fecha').reset_index(drop=True)
+    mid_point = len(df_2026_sorted) // 2
+    
+    # Validación: Primera mitad de 2026
+    df_val = df_2026_sorted.iloc[:mid_point].copy()
+    # Prueba: Segunda mitad de 2026
+    df_test = df_2026_sorted.iloc[mid_point:].copy()
     
     # Guardar los datasets particionados
     train_path = os.path.join(output_dir, 'dataset_entrenamiento.csv')
@@ -114,23 +112,20 @@ def main():
     df_val.to_csv(val_path, index=False)
     df_test.to_csv(test_path, index=False)
     
-    print(f"Dataset de entrenamiento guardado en: {train_path} ({df_train.shape[0]} filas)")
-    print(f"Dataset de validación guardado en: {val_path} ({df_val.shape[0]} filas)")
-    print(f"Dataset de prueba guardado en: {test_path} ({df_test.shape[0]} filas)")
+    print(f"Dataset de entrenamiento (2025) guardado en: {train_path} ({df_train.shape[0]} filas)")
+    print(f"Dataset de validación (Inicio 2026) guardado en: {val_path} ({df_val.shape[0]} filas)")
+    print(f"Dataset de prueba (Resto 2026) guardado en: {test_path} ({df_test.shape[0]} filas)")
     
-    # 7. Imprimir validación de proporciones de estratificación
-    print("\n--- Validación de Proporciones Estratificadas (Estacion) ---")
-    print(f"{'Estación':<12} | {'Unificado':<10} | {'Entrenamiento':<13} | {'Validación':<10} | {'Prueba':<10}")
-    print("-" * 65)
+    # 7. Imprimir validación de proporciones de división y rangos de fechas
+    print("\n--- Validación de la División Cronológica ---")
+    total_weighted = len(df_weighted)
+    print(f"Entrenamiento (2025): {df_train.shape[0]} filas ({df_train.shape[0] / total_weighted * 100:.2f}%)")
+    print(f"   Rango fechas: {df_train['Fecha'].min().strftime('%Y-%m-%d')} a {df_train['Fecha'].max().strftime('%Y-%m-%d')}")
+    print(f"Validación (1a mitad 2026): {df_val.shape[0]} filas ({df_val.shape[0] / total_weighted * 100:.2f}%)")
+    print(f"   Rango fechas: {df_val['Fecha'].min().strftime('%Y-%m-%d')} a {df_val['Fecha'].max().strftime('%Y-%m-%d')}")
+    print(f"Prueba (2a mitad 2026): {df_test.shape[0]} filas ({df_test.shape[0] / total_weighted * 100:.2f}%)")
+    print(f"   Rango fechas: {df_test['Fecha'].min().strftime('%Y-%m-%d')} a {df_test['Fecha'].max().strftime('%Y-%m-%d')}")
     
-    seasons = ['Verano', 'Otoño', 'Invierno', 'Primavera']
-    for s in seasons:
-        prop_uni = (df_weighted['Estacion'] == s).mean() * 100
-        prop_train = (df_train['Estacion'] == s).mean() * 100
-        prop_val = (df_val['Estacion'] == s).mean() * 100
-        prop_test = (df_test['Estacion'] == s).mean() * 100
-        print(f"{s:<12} | {prop_uni:>8.2f}% | {prop_train:>11.2f}% | {prop_val:>8.2f}% | {prop_test:>8.2f}%")
-        
     print("\nProceso finalizado con éxito.")
 
 if __name__ == '__main__':
