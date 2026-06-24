@@ -1,6 +1,6 @@
 # Predicción de Precios Hortofrutícolas - ODEPA
 
-Este proyecto tiene como objetivo diagnosticar, explorar y preparar la infraestructura para la predicción del precio promedio por kilogramo de productos agrícolas en los mercados mayoristas de Chile, utilizando los datasets históricos de la Oficina de Estudios y Políticas Agrarias (ODEPA), como 2025.csv.
+Este proyecto tiene como objetivo diagnosticar, explorar y preparar la infraestructura para la predicción del precio promedio por kilogramo de productos agrícolas en los mercados mayoristas de Chile, utilizando los datasets históricos de la Oficina de Estudios y Políticas Agrarias (ODEPA), como 2025.csv y 2026.csv.
 
 ---
 
@@ -52,7 +52,7 @@ Para lograr un modelo de predicción robusto, comparable y de calidad, se ha dis
 ### 1. Definición del Target: Precio por Kilogramo (La mejor unidad de venta)
 El dataset original contiene precios bajo distintas unidades en la columna "Unidad de comercializacion" (por ejemplo, $/caja 12 kilos, $/saco 25 kilos, $/unidad). 
 *   **Decisión:** El target del modelo se estandarizará a Precio por Kilogramo para hacer comparables todos los productos.
-*   **Implementación:** Se filtrarán las filas cuyas unidades no estén basadas en peso (removiendo unidades individuales como $/unidad o $/docena de matas que corresponden a solo el 28% del dataset, manteniendo más de 144,000 registros). Extraeremos el peso numérico de las cadenas de texto (ej. de $/caja 15 kilos extraemos 15.0) y calcularemos el target como:
+*   **Implementación:** Se filtrarán las filas cuyas unidades no estén basadas en peso (removiendo unidades individuales como $/unidad o $/docena de matas que corresponden a solo el 28% del dataset, manteniendo más de 198,000 registros conjuntos entre 2025 y 2026). Extraeremos el peso numérico de las cadenas de texto (ej. de $/caja 15 kilos extraemos 15.0) y calcularemos el target como:
     Precio_Promedio_Por_Kilo = Precio promedio / Peso en Kilos
 
 ### 2. Variables de Entrada (Features) y Justificación
@@ -71,10 +71,17 @@ El dataset original contiene precios bajo distintas unidades en la columna "Unid
     *   Baja Cardinalidad (Subsector, Estacion): Codificación One-Hot Encoding (genera columnas binarias).
     *   Alta Cardinalidad (Producto, Variedad / Tipo, Origen, Mercado, Calidad): Codificación Target Encoding (Mean Encoding) basado en el target de entrenamiento, para evitar expandir artificialmente la dimensionalidad y acelerar el cómputo de los modelos de ensamble.
 
-### 4. Partición de Datos (Data Splitting)
-Para simular correctamente un entorno de producción y evitar la fuga de datos (data leakage) de naturaleza temporal, no utilizaremos partición aleatoria. En su lugar, dividiremos cronológicamente los datos de 2025:
-*   **Entrenamiento:** Datos de Enero a Septiembre de 2025.
-*   **Validación / Pruebas:** Datos de Octubre a Diciembre de 2025.
+### 4. Estructura de Directorios de Datos
+Los datos crudos se unifican, limpian y dividen de forma estructurada en el subdirectorio dataset/processed/:
+*   **dataset/processed/dataset_unificado.csv:** Archivo conjunto de los datos 2025 y 2026 preprocesados con precios por kilo y estación.
+*   **dataset/processed/dataset_entrenamiento.csv:** Subconjunto de entrenamiento (70% del total).
+*   **dataset/processed/dataset_validacion.csv:** Subconjunto de validación (15% del total).
+*   **dataset/processed/dataset_prueba.csv:** Subconjunto de prueba final (15% del total).
+
+### 5. Partición Estratificada de Datos (Data Splitting)
+Para garantizar que las proporciones de las estaciones de cosecha del año (Verano, Otoño, Invierno y Primavera) estén representadas de manera idéntica en los conjuntos de datos, se utiliza una partición estratificada por la columna "Estacion".
+*   **Proporción:** 70% Entrenamiento, 15% Validación y 15% Prueba.
+*   Esta estratificación previene que el modelo se valide con datos desbalanceados estacionalmente, asegurando una evaluación equitativa a lo largo del año.
 
 ---
 
