@@ -74,14 +74,16 @@ El dataset original contiene precios bajo distintas unidades en la columna "Unid
 ### 4. Estructura de Directorios de Datos
 Los datos crudos se unifican, limpian y dividen de forma estructurada en el subdirectorio dataset/processed/:
 *   **dataset/processed/dataset_unificado.csv:** Archivo conjunto de los datos 2025 y 2026 preprocesados con precios por kilo y estación.
-*   **dataset/processed/dataset_entrenamiento.csv:** Subconjunto de entrenamiento (70% del total).
-*   **dataset/processed/dataset_validacion.csv:** Subconjunto de validación (15% del total).
-*   **dataset/processed/dataset_prueba.csv:** Subconjunto de prueba final (15% del total).
+*   **dataset/processed/dataset_entrenamiento.csv:** Subconjunto de entrenamiento (72.5% del total).
+*   **dataset/processed/dataset_validacion.csv:** Subconjunto de validación (13.7% del total).
+*   **dataset/processed/dataset_prueba.csv:** Subconjunto de prueba final (13.8% del total).
 
-### 5. Partición Estratificada de Datos (Data Splitting)
-Para garantizar que las proporciones de las estaciones de cosecha del año (Verano, Otoño, Invierno y Primavera) estén representadas de manera idéntica en los conjuntos de datos, se utiliza una partición estratificada por la columna "Estacion".
-*   **Proporción:** 70% Entrenamiento, 15% Validación y 15% Prueba.
-*   Esta estratificación previene que el modelo se valide con datos desbalanceados estacionalmente, asegurando una evaluación equitativa a lo largo del año.
+### 5. Partición Cronológica de Datos (Data Splitting)
+Para este proyecto de series temporales y predicción de precios mayoristas, la división aleatoria (como K-Fold o muestreo aleatorio uniforme) no es adecuada porque provoca fugas de datos temporales (temporal data leakage). La fuga de datos ocurre cuando el modelo utiliza información futura (ej. precios de abril de 2026) para predecir precios pasados (ej. precios de enero de 2026), lo que daría métricas de validación artificialmente altas pero un desempeño pobre en producción real.
+Por lo tanto, los datos se dividen siguiendo un orden cronológico estricto:
+*   **Entrenamiento (72.5%):** Todo el año 2025 (desde el 1 de enero al 31 de diciembre de 2025).
+*   **Validación (13.7%):** El principio del año 2026 (desde el 2 de enero al 13 de marzo de 2026).
+*   **Prueba (13.8%):** El restante del año 2026 (desde el 13 de marzo al 29 de mayo de 2026).
 
 ---
 
