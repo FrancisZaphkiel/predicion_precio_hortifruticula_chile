@@ -1,80 +1,95 @@
-# Predicción Estacional de Precios Mayoristas Hortofrutícolas en Chile
+# Predicción de Precios Hortofrutícolas - ODEPA
 
-## 1. Definición del Problema
-
-El sector agrícola y comercializador en Chile se enfrenta a una alta volatilidad de precios en los mercados mayoristas. Esta variación está impulsada principalmente por dinámicas geográficas, fluctuaciones en la oferta diaria (`Volumen`) y, fundamentalmente, por factores climáticos estacionales. Para los agricultores, intermediarios y tomadores de decisiones, la incertidumbre en el valor de cierre de las transacciones dificulta la planificación financiera a mediano plazo, la gestión de inventarios y la optimización de las cadenas de distribución.
-
-**Pregunta de Investigación:**
-
-> ¿Es posible predecir con precisión el **Precio Promedio estacional** de frutas y hortalizas en Chile utilizando algoritmos de aprendizaje automático clásico y técnicas de ingeniería de características?
+Este proyecto tiene como objetivo diagnosticar, explorar y preparar la infraestructura para la predicción del precio promedio por kilogramo de productos agrícolas en los mercados mayoristas de Chile, utilizando los datasets históricos de la Oficina de Estudios y Políticas Agrarias (ODEPA), como 2025.csv.
 
 ---
 
-## Integrantes
+## Configuración del Entorno de Desarrollo (Fish Shell)
 
-* Nahuel Catrileo
-* Francisco Ceballos
-* Angel Rocha
-* Francisco Tropa
+Para preparar el entorno virtual de Python y ejecutar las dependencias en la terminal Fish Shell de Linux, siga los siguientes pasos de forma secuencial:
 
----
+### 1. Creación del Entorno Virtual
+Cree un entorno virtual de Python en la carpeta raíz del proyecto ejecutando:
+```fish
+python3 -m venv .venv
+```
 
-## 2. El Dataset
+### 2. Activación del Entorno en Fish Shell
+En Fish Shell, active el entorno usando la sintaxis source:
+```fish
+source .venv/bin/activate.fish
+```
 
-El proyecto unifica y procesa los registros históricos oficiales de la **Oficina de Estudios y Políticas Agrarias (ODEPA)** correspondientes a los años **2025 y 2026** (con más de 270.000 registros entre los dos años).
+### 3. Instalación de Dependencias
+Con el entorno virtual activado, instale las dependencias especificadas en el archivo requirements.txt:
+```fish
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-* **Origen de los datos:** Plataforma de Datos Abiertos Gubernamentales de Chile.
-* **Enlace oficial:** [Precios Mayoristas de Frutas y Hortalizas - datos.gob.cl](https://datos.gob.cl/dataset/precios-mayoristas-de-frutas-y-hortalizas1)
+### 4. Registro del Kernel en Jupyter
+Registre el entorno virtual como un kernel de Jupyter para que esté disponible en los notebooks:
+```fish
+python3 -m ipykernel install --user --name=prediccion-precios --display-name "Predicción Precios (ODEPA)"
+```
 
-### Arquitectura de Variables (Features)
-
-* **Temporales:** `Fecha` (Registro cronológico continuo).
-* **Geográficas / Logísticas:** `Región`, `Mercado`, `Origen` (Procedencia a nivel provincial o internacional).
-* **Segmentación de Producto:** `Subsector` (Frutas o Hortalizas), `Producto`, `Variedad / Tipo`, `Calidad`.
-* **Métricas Operacionales:** `Volumen` (Cantidad de unidades o envases transados).
-* **Variable Objetivo ($Y$):** `Precio promedio` (Valor continuo).
-
----
-
-## 3. Objetivo de la Predicción Estacional
-
-A diferencia de un análisis predictivo diario inmediato, este modelo implementa una **estrategia macro-temporal**:
-
-1. **Aislamiento del Ciclo Biológico:** A partir de la columna `Fecha`, se realiza una ingeniería de variables para extraer la característica categórica **`Estacion_Del_Año`** (*Verano, Otoño, Invierno, Primavera*). Esto permite al modelo mapear cómo cambia la sensibilidad de la ley de oferta y demanda según la época climática de cosecha.
-2. **Utilidad del Negocio:** Habilita la capacidad de predecir el comportamiento del precio para el próximo ciclo completo (por ejemplo, proyectar en invierno el precio promedio esperado para la producción que ingresará en la primavera del año siguiente), optimizando las decisiones estratégicas de siembra, rotación de cultivos y negociación de contratos de distribución.
-
----
-
-## 4. Modelos y Técnicas de Machine Learning
-
-El problema está abordado formalmente como una **Regresión Supervisada**. Tras un riguroso proceso de limpieza de datos (remoción de registros inactivos con precios en cero, conversión de formatos de texto `"0,0000"` a flotantes numéricos y el uso de **Modelos de Lenguaje (LLM) institucionales** para homogeneizar la columna `Unidad de comercializacion`), se entrenan y comparan las siguientes arquitecturas:
-
-### A. Línea Base (Baseline)
-
-* **Regresión Ridge y Lasso (Modelos Lineales Regularizados):**
-* **Técnica:** Modelado lineal con penalizaciones estadísticas sobre los coeficientes ($L_2$ para Ridge, $L_1$ para Lasso).
-* **Propósito:** Evaluar si el precio estacional se puede aproximar mediante una combinación lineal simple, controlando el sobreajuste (*overfitting*) provocado por la alta cardinalidad de los productos y orígenes.
-
-
-
-### B. Modelos Avanzados basados en Árboles (Ensambles)
-
-* **Random Forest Regressor:**
-* **Técnica:** Ensamble mediante *Bagging* (entrenamiento en paralelo de múltiples árboles de decisión independientes con subconjuntos aleatorios de datos).
-* **Propósito:** Capturar interacciones no lineales complejas entre variables categóricas (como el cruce de un `Producto` con una `Calidad` específica en una determinada `Estacion_Del_Año`) sin requerir un escalado estricto de las métricas de volumen.
-
-
-* **Gradient Boosting Regressor (o XGBoost):**
-* **Técnica:** Ensamble mediante *Boosting* (construcción secuencial y optimizada de árboles de decisión, donde cada árbol corrige matemáticamente los errores residuales del anterior utilizando el descenso de gradiente).
-* **Propósito:** Maximizar la precisión en datos tabulares complejos, capturando de manera óptima las sutiles fluctuaciones operativas del mercado.
-
-
+### 5. Ejecución de Jupyter
+Para iniciar el entorno de Jupyter Notebook o Jupyter Lab, ejecute:
+```fish
+jupyter notebook
+```
+o bien:
+```fish
+jupyter lab
+```
 
 ---
 
-## 5. Estrategias de Preprocesamiento Conectadas
+## Estrategia de Modelamiento y Pipeline de Datos
 
-Para que los algoritmos procesen eficientemente las categorías de texto, la ingeniería de características se divide según el **Análisis de Cardinalidad**:
+Para lograr un modelo de predicción robusto, comparable y de calidad, se ha diseñado la siguiente estrategia:
 
-* **One-Hot Encoding (Baja Cardinalidad):** Aplicado a `Estacion_Del_Año`, `Subsector` y `Calidad`. Crea columnas binarias independientes preservando la interpretabilidad pura.
-* **Target Encoding (Alta Cardinalidad):** Aplicado a `Producto`, `Variedad / Tipo` y `Origen`. Reemplaza las categorías de texto masivas por el promedio del precio histórico correspondiente, evitando la inflación artificial de columnas y reduciendo significativamente los tiempos de cómputo.
+### 1. Definición del Target: Precio por Kilogramo (La mejor unidad de venta)
+El dataset original contiene precios bajo distintas unidades en la columna "Unidad de comercializacion" (por ejemplo, $/caja 12 kilos, $/saco 25 kilos, $/unidad). 
+*   **Decisión:** El target del modelo se estandarizará a Precio por Kilogramo para hacer comparables todos los productos.
+*   **Implementación:** Se filtrarán las filas cuyas unidades no estén basadas en peso (removiendo unidades individuales como $/unidad o $/docena de matas que corresponden a solo el 28% del dataset, manteniendo más de 144,000 registros). Extraeremos el peso numérico de las cadenas de texto (ej. de $/caja 15 kilos extraemos 15.0) y calcularemos el target como:
+    Precio_Promedio_Por_Kilo = Precio promedio / Peso en Kilos
+
+### 2. Variables de Entrada (Features) y Justificación
+*   **Volumen:** Representa la oferta en el mercado. Según la ley de oferta y demanda, un alto volumen transado suele reducir el precio promedio, siendo una característica fundamental.
+*   **Estacion (Temporal):** Reemplaza la fecha lineal por las estaciones del año en el Hemisferio Sur (Chile), capturando ciclos climáticos y de cosechas:
+    *   Verano: Diciembre, Enero, Febrero.
+    *   Otoño: Marzo, Abril, Mayo.
+    *   Invierno: Junio, Julio, Agosto.
+    *   Primavera: Septiembre, Octubre, Noviembre.
+*   **Dia_Semana (Temporal):** Captura micro-patrones de negociación (por ejemplo, si los lunes y viernes los precios varían debido al abastecimiento para el fin de semana).
+*   **Variables Categóricas Estructurales:** Subsector, Producto, Variedad / Tipo, Calidad, Origen, y Mercado (permiten al modelo conocer el tipo de cultivo, su calidad física, la zona geográfica de producción y el centro mayorista de venta).
+
+### 3. Tratamiento de Variables Categóricas
+*   **Valores "Sin especificar":** En columnas como Variedad / Tipo y Calidad, los valores "Sin especificar" son extremadamente comunes y no deben eliminarse ni tratarse como valores perdidos (NaN). Representan una categoría válida de volumen genérico de comercio, por lo que se mantendrán como una etiqueta categórica única. Si existen valores nulos reales (NaN), se imputarán como "Sin especificar".
+*   **Codificación según Cardinalidad:**
+    *   Baja Cardinalidad (Subsector, Estacion): Codificación One-Hot Encoding (genera columnas binarias).
+    *   Alta Cardinalidad (Producto, Variedad / Tipo, Origen, Mercado, Calidad): Codificación Target Encoding (Mean Encoding) basado en el target de entrenamiento, para evitar expandir artificialmente la dimensionalidad y acelerar el cómputo de los modelos de ensamble.
+
+### 4. Partición de Datos (Data Splitting)
+Para simular correctamente un entorno de producción y evitar la fuga de datos (data leakage) de naturaleza temporal, no utilizaremos partición aleatoria. En su lugar, dividiremos cronológicamente los datos de 2025:
+*   **Entrenamiento:** Datos de Enero a Septiembre de 2025.
+*   **Validación / Pruebas:** Datos de Octubre a Diciembre de 2025.
+
+---
+
+## Variables del Modelo
+
+### Variable Objetivo (Target)
+*   **Precio_Promedio_Por_Kilo (Numérica):** Representa el precio promedio en pesos chilenos ($) por cada kilogramo de producto transado. Es calculada dividiendo el "Precio promedio" del registro por el peso extraído de la "Unidad de comercialización".
+
+### Variables de Entrada (Features)
+*   **Volumen (Numérica):** Cantidad física del producto ingresado al mercado mayorista. Permite capturar la ley de oferta y demanda.
+*   **Estacion (Categórica - Baja Cardinalidad):** Representa la estación del año en el Hemisferio Sur (Verano, Otoño, Invierno, Primavera) derivada del mes de la fecha.
+*   **Dia_Semana (Numérica/Categórica):** Día de la semana de la transacción (0 a 6), permitiendo modelar fluctuaciones intradía semanales.
+*   **Subsector (Categórica - Baja Cardinalidad):** Sector de clasificación general del cultivo (e.g., Frutas, Hortalizas y tubérculos).
+*   **Calidad (Categórica - Cardinalidad Moderada):** Clasificación del estado o selección física del producto (e.g., Primera, Segunda, Extra).
+*   **Mercado (Categórica - Cardinalidad Moderada):** Mercado mayorista de origen de la transacción.
+*   **Producto (Categórica - Alta Cardinalidad):** Nombre específico del producto agrícola (e.g., Manzana, Tomate, Ajo).
+*   **Variedad / Tipo (Categórica - Alta Cardinalidad):** Tipo específico o cultivar del producto (e.g., Royal Gala, Granny Smith, Chino). Incluye la categoría "Sin especificar" para registros genéricos.
+*   **Origen (Categórica - Alta Cardinalidad):** Zona geográfica de origen del producto (región o provincia).
