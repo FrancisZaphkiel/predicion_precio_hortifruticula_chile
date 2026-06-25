@@ -1,0 +1,10 @@
+services:
+  jupyter:
+    build: .
+    container_name: jupyter_odepa_prediccion
+    ports:
+      - "8888:8888"
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1

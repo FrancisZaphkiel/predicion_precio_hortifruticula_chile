@@ -87,3 +87,34 @@ El problema está abordado formalmente como una Regresión Supervisada. Se entre
 ### B. Modelos de Ensamble y Árboles
 * **Random Forest Regressor:** Ensamble de tipo Bagging que promedia árboles de decisión independientes. Captura interacciones no lineales robustas.
 * **Gradient Boosting Regressor:** Ensamble secuencial tipo Boosting que optimiza residuos a través de descenso de gradiente para lograr la máxima precisión en datos tabulares complejos.
+
+---
+
+## 6. Dockerización y Ejecución con Docker Compose
+
+El proyecto está completamente dockerizado para facilitar su portabilidad y asegurar que el entorno de ejecución sea reproducible.
+
+### Prerrequisitos
+* **Docker** instalado en el sistema.
+* **Docker Compose** instalado.
+
+### Instrucciones de Ejecución
+
+Para iniciar y ejecutar el contenedor del proyecto, siga los siguientes pasos desde el directorio raíz del proyecto:
+
+1. **Construir e iniciar el contenedor:**
+   ```bash
+   docker compose up --build
+   ```
+   Este comando compilará la imagen de Docker usando el `Dockerfile` y lanzará los servicios descritos en `docker-compose.yml`.
+
+2. **Acceder a la interfaz:**
+   Una vez que el contenedor esté en ejecución, abra su navegador web e ingrese a:
+   [http://localhost:8888](http://localhost:8888)
+   Desde esta interfaz podrá visualizar, editar y ejecutar todos los notebooks interactivos de entrenamiento y comparación.
+
+3. **Detener los servicios:**
+   Para apagar el contenedor de manera limpia y liberar los recursos, ejecute:
+   ```bash
+   docker compose down
+   ```
