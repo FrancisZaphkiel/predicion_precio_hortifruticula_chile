@@ -57,23 +57,27 @@ Para evitar fugas de datos temporales (temporal data leakage) donde información
 
 ---
 
-## 4. Variables del Modelo
+## 4. Variables del Modelo (Diccionario de Datos)
+
+Para facilitar la comprensión técnica y comercial de los datos dentro del equipo, a continuación se describe en detalle qué representa cada una de las variables utilizadas en los modelos:
 
 ### Variable Objetivo (Target)
-* **Precio_Promedio_Por_Kilo (Numérica):** Representa el precio promedio en pesos chilenos ($) por cada kilogramo de producto transado.
+* **`Precio_Promedio_Por_Kilo` (Numérica):** Representa el precio promedio en pesos chilenos ($) calculado por cada kilogramo de producto transado. Se calcula como `Precio promedio / weight_kg`. Esta normalización es crítica para poder comparar el valor real del producto de forma justa, sin importar el formato de envase en el que se venda.
 
 ### Variables de Entrada (Features)
-* **Volumen_Limpio (Numérica):** Cantidad física del producto ingresado al mercado mayorista (captura la ley de oferta y demanda).
-* **Estacion (Categórica - Baja Cardinalidad):** Representa la estación del año en el Hemisferio Sur (Verano, Otoño, Invierno, Primavera) derivada del mes de la fecha.
-* **Dia_Semana (Numérica):** Día de la semana de la transacción (0 a 6), permitiendo modelar fluctuaciones intradía semanales.
-* **Mes (Numérica):** Componente numérico del mes (1 al 12) para modelar la estacionalidad estricta.
-* **weight_kg (Numérica):** Peso en kilogramos extraído de la unidad de comercialización.
-* **Subsector (Categórica - Baja Cardinalidad):** Sector de clasificación general del cultivo (Frutas, Hortalizas y tubérculos).
-* **Calidad (Categórica - Cardinalidad Moderada):** Clasificación del estado o selección física del producto (e.g., Primera, Segunda, Extra).
-* **Mercado (Categórica - Cardinalidad Moderada):** Mercado mayorista de origen de la transacción.
-* **Producto (Categórica - Alta Cardinalidad):** Nombre específico del producto agrícola.
-* **Variedad / Tipo (Categórica - Alta Cardinalidad):** Tipo específico o cultivar del producto (incluyendo "Sin especificar").
-* **Origen (Categórica - Alta Cardinalidad):** Zona geográfica de origen del producto (región o provincia).
+* **`Mercado` (Categórica - Cardinalidad Moderada):** El mercado mayorista físico donde se realiza la transacción comercial del producto (ej. *Lo Valledor*, *Vega Central Mapocho*, *Terminal Hortofrutícola de Chillán*). Permite modelar variaciones de precio asociadas a la ubicación, costos logísticos de transporte y condiciones de oferta/demanda locales de cada centro de distribución.
+* **`Subsector` (Categórica - Baja Cardinalidad):** Sector o clasificación general del cultivo. En este conjunto de datos se divide principalmente en:
+    *   *Frutas*: Frutas frescas, deshidratadas o secas.
+    *   *Hortalizas y tubérculos*: Verduras frescas, legumbres y papas.
+* **`Producto` (Categórica - Alta Cardinalidad):** Nombre específico o genérico de la especie agrícola transada (ej. *Manzana*, *Papa*, *Tomate*, *Limón*). Es la variable principal de agrupación del producto.
+* **`Variedad / Tipo` (Categórica - Alta Cardinalidad):** Tipo específico o variedad comercial del producto (ej. Manzana *Royal Gala*, Papa *Custodia*, Tomate *Larga Vida*). La diferenciación de variedad es de alto impacto, dado que el mercado suele pagar precios muy diferentes por distintas variedades de una misma especie.
+* **`Calidad` (Categórica - Cardinalidad Moderada):** Grado de selección o calidad física asignado al lote comercializado (ej. *Primera*, *Segunda*, *Tercera*). Los productos clasificados como de "Primera" calidad obtienen valores comerciales significativamente más altos en los mercados.
+* **`Origen` (Categórica - Alta Cardinalidad):** Zona de procedencia geográfica (comuna, provincia o región) donde se cosechó el producto (ej. *Curicó*, *Coquimbo*, *Angol*). Ayuda a estimar los costos de flete, la reputación de la zona productora y ventanas de cosecha locales.
+* **`Volumen_Limpio` (Numérica):** Cantidad total de producto ingresado al mercado en esa transacción (limpio de valores nulos o caracteres erróneos). Representa el volumen del lote comercializado, capturando la dinámica de oferta.
+* **`weight_kg` (Numérica):** Peso neto equivalente en kilogramos del formato o envase de comercialización utilizado (ej. si se vende en saco de 25 kg, el valor es `25.0`; si es por kilo individual, es `1.0`). Es la constante de normalización para calcular el precio por kilo.
+* **`Mes` (Numérica):** Mes calendario de la transacción (1 al 12). Captura patrones de estacionalidad histórica de precios a lo largo del año (ej. alzas en invierno y bajas en temporada de cosecha).
+* **`Dia_Semana` (Numérica):** Día de la semana en formato entero (0 para Lunes, 6 para Domingo). Captura variaciones intradía asociadas a los días de mayor o menor descarga de mercadería en los mercados.
+* **`Estacion` (Categórica - Baja Cardinalidad):** Estación del año en el hemisferio sur (Verano, Otoño, Invierno, Primavera) deducida a partir del mes de la fecha. Captura dinámicas climáticas generales y de ciclos agrícolas.
 
 ---
 
