@@ -1,3 +1,5 @@
 ## Entorno de ejecución
 venv/
 .venv/
+*.pkl
+.ipynb_checkpoints/
