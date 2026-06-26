@@ -6,6 +6,8 @@
 * Angel Rocha
 * Francisco Tropa
 
+<img width="3072" height="3793" alt="Papelografo" src="https://github.com/user-attachments/assets/ba87713b-822f-49cf-a12f-29c4d350ae35" />
+
 ---
 
 ## 1. Definición del Problema
